@@ -6,7 +6,7 @@ spec:
   selector:
     matchLabels:
       app: java-app
-  replicas: 8
+  replicas: 2  # Reduzi de 8 para 2 para economizar recursos
   template:
     metadata:
       labels:
@@ -14,8 +14,7 @@ spec:
     spec:
       containers:
         - name: java-app
-          # enter the path to your image, be sure to include the correct region prefix
-          image: william201192/java-sample-app:69e4e794da4d22d8e17ee469798ae6c43dce5bca
+          image: robelio/java-sample-app:latest  # SEU usuário DockerHub
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -23,38 +22,20 @@ spec:
           resources:
             requests:
               cpu: 100m
-              memory: 256Mi
+              memory: 128Mi  # Reduzido para a máquina menor
             limits:
               cpu: 200m
-              memory: 512Mi
+              memory: 256Mi  # Reduzido para a máquina menor
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: java-app-service
 spec:
-  type: ClusterIP
+  type: LoadBalancer  # Mudei de ClusterIP para LoadBalancer para acesso externo
   ports:
-    - port: 8080
-      protocol: TCP
+    - port: 80        # Mudei para porta 80 (mais comum para web)
       targetPort: 8080
+      protocol: TCP
   selector:
     app: java-app
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: java-app-ing
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
-spec:
-  rules:
-  - http:
-      paths:
-        - path: /
-          pathType: Prefix
-          backend:
-            service:
-              name: java-app-service
-              port:
-                number: 8080

@@ -6,20 +6,20 @@ on:
       - main
 
 permissions:
-  contents: write      
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout código
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Configurar JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          java-version: "17"
+          distribution: "temurin"
 
       - name: Build com Maven
         run: mvn -B package --file pom.xml
@@ -28,19 +28,20 @@ jobs:
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Build da imagem
-        run: docker build -t william201192/java-sample-app:${{ github.sha }} .
+        run: docker build -t robelio/java-sample-app:${{ github.sha }} .
 
       - name: Push da imagem
-        run: docker push william201192/java-sample-app:${{ github.sha }}
+        run: docker push robelio/java-sample-app:${{ github.sha }}
 
       - name: Update k8s Manifest
         env:
           IMAGE_TAG: ${{ github.sha }}
-          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
-          sed "s/\${IMAGE_TAG}/${IMAGE_TAG}/g" deployment-template.yaml > deploy/deployment.yaml
+          # Atualiza a imagem no deployment.yaml
+          sed -i "s|robelio/java-sample-app:[^[:space:]\"]*|robelio/java-sample-app:${IMAGE_TAG}|g" deploy/deployment.yaml
+
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
           git add deploy/deployment.yaml
           git commit -m "Update deployment to SHA ${IMAGE_TAG}" || echo "Sem mudanças para commit"
-          git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/willtechdev/java-sample-app-arm-v2.git HEAD:main
+          git push
