@@ -6,7 +6,7 @@ spec:
   selector:
     matchLabels:
       app: java-app
-  replicas: 2  # Reduzi de 8 para 2 para economizar recursos
+  replicas: 4  # Reduzi de 8 para 2 para economizar recursos
   template:
     metadata:
       labels:
