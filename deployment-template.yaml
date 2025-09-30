@@ -6,7 +6,7 @@ spec:
   selector:
     matchLabels:
       app: java-app
-  replicas: 4
+  replicas: 6
   template:
     metadata:
       labels:
@@ -15,7 +15,7 @@ spec:
       containers:
         - name: java-app
           # enter the path to your image, be sure to include the correct region prefix
-          image: william201192/java-sample-app:${IMAGE_TAG}
+          image: robelio/java-sample-app:${IMAGE_TAG}
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
