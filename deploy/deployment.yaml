@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: java-app
-          image: robelio/java-sample-app:002ed463f213488621346097c2fd3da918898f13  # SEU usuário DockerHub
+          image: robelio/java-sample-app:b3af2a8ef94658a6406d7b788f626b4ee50dd15b  # SEU usuário DockerHub
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
